@@ -46,7 +46,7 @@
     // ログインユーザーの位置設定によって、月の表示をかえる
     let user = kintone.getLoginUser();
     let ganttMonths, ganttDow, ganttWaitmessage = '';
-    switch (user['language']) {  // はじめて見た。ライブラリ独自のやつかな
+    switch (user['language']) {  // 　switch文
         case 'ja':
             ganttMonths = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
             ganttDow = ['日', '月', '火', '水', '木', '金', '土'];
@@ -66,9 +66,9 @@
 
     // レコードに値を入れるところだけど、もうちょっと詳しくどんな処理か読んでコメントに入れる
     for (var i = 0; i < records.length; i++) {
-
+        // レコードの優先度に入っている値を評価し、値によってガントチャートの色をかえる
         let colorGantt = 'ganttGray';
-        switch (records[i]['Priority']['value']) {
+        switch (records[i]['Priority']['value']) {  
             case 'A':
                 colorGantt = 'ganttRed';
                 break;
@@ -90,7 +90,7 @@
             default:
                 colorGantt = 'ganttGray';
         }
-
+        // レコードの値が入っている項目をガントチャートに表示する
         let descGantt = '<strong>' + escapeHtml(records[i]['To_Do']['value']) + '</strong>';
         if (records[i]['From']['value']) {
             descGantt += '<br />' + 'From: ' + escapeHtml(records[i]['From']['value']);

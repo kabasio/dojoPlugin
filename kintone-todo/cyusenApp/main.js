@@ -8,8 +8,6 @@
     }
 
     // ボタン作成
-    const $lotteryButton = $('<button class="lottery-button" id="lottery-button" title="抽選"><i class="fa fa-gift" aria-hidden="true"></i></button>');
-
     const menu = kintone.app.getHeaderMenuSpaceElement();
     const lotteryButton = document.createElement('button');
     lotteryButton.id = 'lottery-button';
@@ -18,10 +16,32 @@
 
     const i = document.createElement('i');
     i.class = 'fa fa-gift';
-    i.ariaHidden = 'true';
+    i.setAttribute(("aria-hidden", "true"));
     lotteryButton.appendChild(i);
 
+    // ボタンクリック時の操作
+    lotteryButton.addEventListener(click, function() {
+      // レコードを全件取得
+      const fetchRecords = (function(appId, opt_offset, opt_limit, opt_records) {
+        const offset = opt_offset || 0;
+        const limit = opt_limit || 100;
+        let allRecords = opt_records || [];
+
+      const params = {
+        app: appId,
+        query: 'order by レコード番号 asc limit ' + limit + ' offset ' + offset
+    　};
+
+      return kintone.api('/k/v1/records', 'GET', params).then(function() {
+        allRecords = allRecords.concat(resp.records);
+
+          if (resp.records.length === limit) {
+            return fetchRecords(appId, offset + limit, limit, allRecords);
+          }
+          return allRecords;
+      });
+      });
+
+    });
   });
-
-
 })();

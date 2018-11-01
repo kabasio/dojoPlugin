@@ -6,7 +6,6 @@
     if (document.getElementById('lottery-button') !== null) {
       return;
     }
-
     // ボタン作成
     const menu = kintone.app.getHeaderMenuSpaceElement();
     const lotteryButton = document.createElement('button');
@@ -31,7 +30,7 @@
         app: appId,
         query: 'order by レコード番号 asc limit ' + limit + ' offset ' + offset
     　};
-
+    
       return kintone.api('/k/v1/records', 'GET', params).then(function() {
         allRecords = allRecords.concat(resp.records);
 
@@ -41,7 +40,24 @@
           return allRecords;
       });
       });
+      // 抽選実行
+      return fetchRecords(kintone.app.getId()).then(function(allRecords){
+        // 抽選ロジック
+        const num = allRecords.length;
+        const rand = Math.floor(Math.random() * num);
+        const name = allRecords[rand].name.value;
 
+        // SweetAlertで当選者表示
+        return swal({
+          title: name + 'さん当選です！',
+          text: 'おめでとうございます☆*:.｡. o(≧▽≦)o .｡.:*☆',
+          timer: 3000,
+          showConfirmButton: false
+        });
+
+     });
     });
+
+    menu.appendChild(lotteryButton);
   });
 })();

@@ -1,0 +1,66 @@
+/*
+ * Random lottery sample program
+ * Copyright (c) 2018 Cybozu
+ *
+ * Licensed under the MIT License
+*/
+
+/** 抽選ボタン **/
+.lottery-button {
+  /* color: #a8a8a8; */
+  color: #f5a1dc;
+  font-size: 32px;
+  display: inline-block;
+  padding: 0 16px;
+  height: 48px;
+  border: 1px solid #e3e7e8;
+  background-color: #f7f9fa;
+  text-align: center;
+}
+
+/** 抽選ボタンホバー時 **/
+.lottery-button:hover {
+  /* color: #3498db; */
+  color: #f33bb6;
+}
+
+/** マーキーさせたい部分 */
+.board {
+  width: 100%;
+  height: 55px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  background-image: radial-gradient(#0C94F5 10%, transparent 20%), radial-gradient(#F5C20C 10%, transparent 20%);
+  background-color: #fcfcfc;
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  overflow: hidden; /* スクロールバーが出ないように */
+  position: relative; /* マーキーの内容部分の位置の基準になるように */
+}
+/* マーキーの内容部分の高さ確保 */
+.board::after {
+  content: "";
+  white-space: nowrap;
+  display: inline-block;
+}
+/* マーキーさせたい部分(内側) */
+.board > .board-inner {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  animation-name: marquee;
+  animation-timing-function: linear;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+}
+/* マウスオーバーでマーキーストップ */
+.board > .board-inner:hover {
+  animation-play-state: paused;
+  cursor: default;
+}
+/** マーキーアニメーション */
+@keyframes marquee {
+  0% { left: 100%; transform: translate(0); }
+  100% { left: 0; transform: translate(-100%); }
+}

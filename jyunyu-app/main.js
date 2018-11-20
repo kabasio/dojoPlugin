@@ -94,7 +94,7 @@ let RESP;
     // 授乳開始ボタンが押されたときの処理
     const clilkStartButton = () => {
       if (!confirm('授乳をはじめます')) {
-        return;
+        return; // エラーがでます
         // その後の処理
       }
     };

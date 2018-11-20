@@ -1,8 +1,10 @@
-let indexEvent;
+let EVENT;
+let RESP;
 (function main() {
   'use strict';
+  moment.locale('ja');
   kintone.events.on('mobile.app.record.index.show', (event) => {
-    indexEvent = event;
+    EVENT = event;
     // 画面の空白部分を取得
     const headerSpace = kintone.mobile.app.getHeaderSpaceElement();
 
@@ -10,7 +12,7 @@ let indexEvent;
     const hourContainer = document.createElement('div');
     // 時計・タイトルを作成
     const appTitle = document.createElement('h1');
-    appTitle.textContent = '前回の授乳時間から';
+    appTitle.textContent = '前回の授乳は';
     const clock = document.createElement('p');
     clock.id = 'clock';
     // 時計・タイトルをhourContainer,headerSpaceにappendする
@@ -18,12 +20,19 @@ let indexEvent;
     hourContainer.appendChild(clock);
     headerSpace.appendChild(hourContainer);
     // 前回の授乳からの時間を取得する関数
+    const getParam = {
+      app: event.appId,
+      totalCount: true,
+    };
     const showDate = () => {
-      const nowTime = moment().format('HH:mm:ss');
-      // テーブルの情報を取得
-      const tableRecords = event.record;
-      console.log(tableRecords);
-      document.getElementById('clock').textContent = nowTime;
+      kintone.api(kintone.api.url('/k/v1/records', true), 'GET', getParam, (resp) => {
+        RESP = resp;
+        let lastTime = moment(RESP.records[0].Table.value[RESP.records[0].Table.value.length - 1].value.授乳終了.value).startOf('hour').fromNow();
+        console.log(moment(RESP.records[0].Table.value[RESP.records[0].Table.value.length - 1].value.授乳終了.value).format('MMMM Do YYYY, h:mm'));
+        console.log(moment().format('MMMM Do YYYY, h:mm'));
+        // alert(`前回の授乳時間は ${lastTime} です`);
+        document.getElementById('clock').textContent = `${lastTime} だよ`;
+      });
     };
     // 時刻表示の関数を実行
     showDate();
@@ -34,7 +43,7 @@ let indexEvent;
     appTitle.style.color = '#666';
 
     clock.style.fontFamily = 'monaco';
-    clock.style.fontSize = '25px';
+    clock.style.fontSize = '35px';
     // ボタンコンテナを作成
     const buttonContainer = document.createElement('div');
     // 授乳開始ボタン・終了ボタンを作成するための関数を定義
@@ -64,14 +73,17 @@ let indexEvent;
     buttonContainer.style.flexWrap = 'wrap';
     buttonContainer.style.justifyContent = 'center';
 
-    startButton.style.backgroundColor = '#3dd28d';
-    finishButton.style.backgroundColor = '#353866';
+    startButton.style.backgroundColor = '#f16f6f';
+    finishButton.style.backgroundColor = '#94d2e6';
 
     // 入力欄コンテナを作成
     const formContainer = document.createElement('div');
     // 授乳量入力欄を作成
     const milkForm = document.createElement('form');
     milkForm.id = 'milkForm';
+    const milkFormImput = document.createElement('input');
+    milkFormImput.type = 'text';
+    milkFormImput.id = 'milkFormImput';
     // memo入力欄を作成
     const memoForm = document.createElement('form');
     memoForm.id = 'memoForm';
@@ -79,7 +91,14 @@ let indexEvent;
     formContainer.appendChild(milkForm);
     formContainer.appendChild(memoForm);
     headerSpace.appendChild(formContainer);
+    // 授乳開始ボタンが押されたときの処理
+    const clilkStartButton = () => {
+      if (!confirm('授乳をはじめます')) {
+        return;
+        // その後の処理
+      }
+    };
+    // 授乳終了ボタンが押されたときの処理
+    startButton.addEventListener('click', clilkStartButton);
   });
-  // 当日のレコードが無いとき、新規登録ボタンを表示
-  // 当日のレコードがある場合、テーブル追加
 }());
